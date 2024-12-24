@@ -28,7 +28,7 @@ function App({exportSpreadsheet}: AppProps) {
                     generatingSpreadsheet ?
                         <img src={spinner} alt="Spinner"/> :
                         <>
-                            <button onClick={generateRota}>Generate Rota</button>
+                            <button onClick={generateRota}>Export Rota</button>
                             <p>
                                 {
                                     spreadsheetUrl &&
