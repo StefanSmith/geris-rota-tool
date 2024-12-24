@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {useState} from "react";
+import spinner from './assets/spinner.gif'
 
-function App() {
-  const [count, setCount] = useState(0)
+type AppProps = {
+    exportSpreadsheet: ({title}: { title: string }) => Promise<{ spreadsheetUrl: string }>
+};
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function App({exportSpreadsheet}: AppProps) {
+    const [generatingSpreadsheet, setGeneratingSpreadsheet] = useState(false);
+    const [spreadsheetUrl, setSpreadsheetUrl] = useState(undefined as string | undefined);
+
+    async function generateRota() {
+        setGeneratingSpreadsheet(true);
+
+        const result = await exportSpreadsheet({
+            title: `Geris Rota (Generated ${new Date().toISOString()})`
+        });
+
+        setGeneratingSpreadsheet(false);
+        setSpreadsheetUrl(result.spreadsheetUrl);
+    }
+
+    return (
+        <>
+            <div className="card">
+                {
+                    generatingSpreadsheet ?
+                        <img src={spinner} alt="Spinner"/> :
+                        <>
+                            <button onClick={generateRota}>Generate Rota</button>
+                            <p>
+                                {
+                                    spreadsheetUrl &&
+                                    <a href={spreadsheetUrl} target="_blank">Open rota</a>
+                                }
+                            </p>
+                        </>
+                }
+            </div>
+        </>
+    )
 }
 
 export default App
