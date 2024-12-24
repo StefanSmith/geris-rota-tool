@@ -45,9 +45,15 @@ export default ({apiKey, authClientId}: { apiKey: string, authClientId: string }
                     }
                 });
 
-                const requestAccessTokenConfig = {prompt: gapi.client.getToken() === null ? 'consent' : ''};
-                tokenClient.requestAccessToken(requestAccessTokenConfig);
-                await tokenRequestPromise;
+                const serialisedToken = sessionStorage.getItem('googleAccessToken');
+
+                if (serialisedToken) {
+                    gapi.client.setToken(JSON.parse(serialisedToken));
+                } else {
+                    tokenClient.requestAccessToken({prompt: 'consent'});
+                    await tokenRequestPromise;
+                    sessionStorage.setItem('googleAccessToken', JSON.stringify(gapi.client.getToken()));
+                }
             }
 
             const response = await gapi.client.sheets.spreadsheets.create({resource: {properties: {title}}});
