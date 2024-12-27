@@ -1,7 +1,8 @@
 import './App.css'
 import {useState} from "react";
 import spinner from './assets/spinner.gif'
-import {ExportSpreadsheetFunction, GenerateRotaTableFunction} from "./ports.ts";
+import {GenerateRotaTableFunction} from "./domain/rotaTableGenerator.ts";
+import {ExportSpreadsheetFunction} from "./domain/ports.ts";
 
 type AppProps = {
     exportSpreadsheet: ExportSpreadsheetFunction,

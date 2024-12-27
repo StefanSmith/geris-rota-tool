@@ -1,16 +1,17 @@
 import {differenceInDays} from "date-fns";
 import createGoogleApiClient from "./googleApiClient.ts";
-import {SpreadsheetExporter} from "../../ports.ts";
 import createSdkGoogleAccessTokenClient from "./authorization/sdkGoogleAccessTokenClient.ts";
 import createSessionStorageGoogleAccessTokenClient from "./authorization/sessionStorageGoogleAccessTokenClient.ts";
 import createApiClientAuthorizer, {ApiClientAuthorizer} from "./authorization/apiClientAuthorizer.ts";
+import {SpreadsheetExporter} from "../../domain/ports.ts";
+import {RotaTableRow} from "../../domain/rotaTableGenerator.ts";
 
-function toGoogleSheetsDate(date: Date) {
+function toGoogleSheetsDate(date: Date): number {
     return differenceInDays(date, new Date(1899, 12, 30));
 }
 
-function tableToRowData(table: (string | Date)[][]) {
-    return table.map(row => ({
+function rowsToSheetsRowData(rows: RotaTableRow[]): gapi.client.sheets.RowData[] {
+    return rows.map(row => ({
         values: row.map(cellValue => ({
             userEnteredValue: cellValue instanceof Date ?
                 {numberValue: toGoogleSheetsDate(cellValue)} :
@@ -23,7 +24,7 @@ function createSpreadsheetExporter({apiKey, authClientId}: { apiKey: string, aut
     let apiClientAuthorizer: ApiClientAuthorizer | undefined;
 
     const spreadsheetExporter: SpreadsheetExporter = {
-        exportSpreadsheet: async ({title, table}: { title: string, table: (string | Date)[][] }) => {
+        exportSpreadsheet: async ({title, table}) => {
             if (!apiClientAuthorizer) {
                 apiClientAuthorizer = createApiClientAuthorizer(
                     {
@@ -41,27 +42,28 @@ function createSpreadsheetExporter({apiKey, authClientId}: { apiKey: string, aut
                 const createResponse = await apiClient.sheets.spreadsheets.create({
                     resource: {
                         properties: {title},
-                        sheets: [{data: [{startRow: 0, startColumn: 0, rowData: tableToRowData(table)}]}]
+                        sheets: [{data: [{startRow: 0, startColumn: 0, rowData: rowsToSheetsRowData(table.rows)}]}]
                     }
                 });
 
                 const spreadsheet = createResponse.result;
 
-                apiClient.sheets.spreadsheets.batchUpdate({
+                await apiClient.sheets.spreadsheets.batchUpdate({
                     spreadsheetId: spreadsheet.spreadsheetId!,
                     resource: {
-                        requests: [
-                            {
+                        requests:
+                            table.dateColumns.map(dateColumnIndex => ({
                                 repeatCell: {
                                     range: {
                                         sheetId: spreadsheet.sheets![0].properties!.sheetId,
-                                        startColumnIndex: 0,
-                                        endColumnIndex: 1
+                                        startColumnIndex: dateColumnIndex,
+                                        endColumnIndex: dateColumnIndex + 1
                                     },
                                     cell: {userEnteredFormat: {numberFormat: {type: "DATE"}}},
                                     fields: "userEnteredFormat.numberFormat"
                                 }
-                            }]
+                            }))
+
                     }
                 })
 
