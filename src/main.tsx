@@ -3,8 +3,8 @@ import {createRoot} from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-import createSpreadsheetExporter from "./adapters/googleSheetsSpreadsheetExporter.ts";
 import createRotaTableGenerator from "./domain/rotaTableGenerator.ts";
+import createSpreadsheetExporter from "./adapters/google/googleSheetsSpreadsheetExporter.ts";
 
 const spreadsheetExporter = createSpreadsheetExporter({
     apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
