@@ -1,17 +1,25 @@
+import createRotaCalendar from "./rotaCalendar.ts";
+import {Clock} from "./ports.ts";
+
 export type RotaTableCell = string | Date;
 export type RotaTableRow = RotaTableCell[];
 export type RotaTable = { rows: RotaTableRow[], dateColumns: number[] };
 
-function createRotaTableGenerator() {
+export interface RotaTableGenerator {
+    generateRotaTable(): RotaTable
+}
+
+function createRotaTableGenerator(clock: Clock): RotaTableGenerator {
+    const rotaCalendar = createRotaCalendar(clock);
+
     return {
         generateRotaTable(): RotaTable {
+            const headerRow: RotaTableRow = ['Monday', 'CMU A', 'CMU B'];
+            const mondays = rotaCalendar.getRotaMondays();
+            const weekRows: RotaTableRow[] = mondays.map(monday => [monday, '', '']);
+
             return {
-                rows: [
-                    ['Monday', 'CMU A', 'CMU A'],
-                    [new Date(2024, 3, 1), '', ''],
-                    [new Date(2024, 3, 8), '', ''],
-                    [new Date(2024, 3, 15), '', ''],
-                ],
+                rows: [headerRow, ...weekRows],
                 dateColumns: [0]
             };
         }
@@ -19,4 +27,5 @@ function createRotaTableGenerator() {
 }
 
 export default createRotaTableGenerator;
+
 export type GenerateRotaTableFunction = () => RotaTable;

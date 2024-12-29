@@ -11,13 +11,13 @@
     "deploy": "npm run build -- --mode development && git checkout github-pages && cp dist/index.html . && git commit -m\"Release at $(date -Iseconds)\" . && git push && git checkout main"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.2.0",
     "date-fns": "^4.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@types/date-fns": "^2.5.3",
     "@types/gapi": "^0.0.47",
     "@types/gapi.client.sheets-v4": "^0.0.4",
     "@types/google.accounts": "^0.0.15",
@@ -31,6 +31,7 @@
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.1",
     "vite": "^6.0.3",
-    "vite-plugin-singlefile": "^2.1.0"
+    "vite-plugin-singlefile": "^2.1.0",
+    "vitest": "^2.1.8"
   }
 }
