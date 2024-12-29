@@ -14,7 +14,7 @@ function createRotaTableGenerator(clock: Clock): RotaTableGenerator {
 
     return {
         generateRotaTable(): RotaTable {
-            const headerRow: RotaTableRow = ['Monday', 'CMU A', 'CMU B'];
+            const headerRow: RotaTableRow = ['Monday', 'CMU A', 'CMU A'];
             const mondays = rotaCalendar.getRotaMondays();
             const weekRows: RotaTableRow[] = mondays.map(monday => [monday, '', '']);
 

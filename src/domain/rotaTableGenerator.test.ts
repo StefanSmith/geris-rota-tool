@@ -19,14 +19,9 @@ test('names the first column "Monday"', () => {
     expect(rotaTable.rows[0][0]).toEqual('Monday');
 });
 
-test('includes column for "CMU A" ward', () => {
+test('includes 2 columns for "CMU A" ward', () => {
     const rotaTable = rotaTableGenerator.generateRotaTable();
-    expect(rotaTable.rows[0]).toContain('CMU A');
-});
-
-test('includes column for "CMU B" ward', () => {
-    const rotaTable = rotaTableGenerator.generateRotaTable();
-    expect(rotaTable.rows[0]).toContain('CMU B');
+    expect(rotaTable.rows[0].filter(cellValue => cellValue === 'CMU A')).toHaveLength(2);
 });
 
 test("includes row for every Monday in upcoming year's rota", () => {
