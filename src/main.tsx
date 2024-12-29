@@ -16,7 +16,7 @@ const rotaTableGenerator = createRotaTableGenerator(createSystemClock());
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <App exportSpreadsheet={spreadsheetExporter.exportSpreadsheet}
-             generateRotaTable={rotaTableGenerator.generateRotaTable}/>
+        <App spreadsheetExporter={spreadsheetExporter}
+             rotaTableGenerator={rotaTableGenerator}/>
     </StrictMode>,
 )

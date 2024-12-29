@@ -24,7 +24,7 @@ function createSpreadsheetExporter({apiKey, authClientId}: { apiKey: string, aut
     let apiClientAuthorizer: ApiClientAuthorizer | undefined;
 
     const spreadsheetExporter: SpreadsheetExporter = {
-        exportSpreadsheet: async ({title, table}) => {
+        exportSpreadsheet: async (title, table) => {
             if (!apiClientAuthorizer) {
                 apiClientAuthorizer = createApiClientAuthorizer(
                     {

@@ -1,25 +1,25 @@
 import './App.css'
 import {useState} from "react";
 import spinner from './assets/spinner.gif'
-import {GenerateRotaTableFunction} from "./domain/rotaTableGenerator.ts";
-import {ExportSpreadsheetFunction} from "./domain/ports.ts";
+import {RotaTableGenerator} from "./domain/rotaTableGenerator.ts";
+import {SpreadsheetExporter} from "./domain/ports.ts";
 
 type AppProps = {
-    exportSpreadsheet: ExportSpreadsheetFunction,
-    generateRotaTable: GenerateRotaTableFunction
+    spreadsheetExporter: SpreadsheetExporter,
+    rotaTableGenerator: RotaTableGenerator
 };
 
-function App({exportSpreadsheet, generateRotaTable}: AppProps) {
+function App({spreadsheetExporter, rotaTableGenerator}: AppProps) {
     const [generatingSpreadsheet, setGeneratingSpreadsheet] = useState(false);
     const [spreadsheetUrl, setSpreadsheetUrl] = useState(undefined as string | undefined);
 
     async function generateRota() {
         setGeneratingSpreadsheet(true);
 
-        const result = await exportSpreadsheet({
-            title: `Geris Rota (Generated ${new Date().toISOString()})`,
-            table: generateRotaTable()
-        });
+        const result = await spreadsheetExporter.exportSpreadsheet(
+            `Geris Rota (Generated ${new Date().toISOString()})`,
+            rotaTableGenerator.generateRotaTable()
+        );
 
         setGeneratingSpreadsheet(false);
         setSpreadsheetUrl(result.spreadsheetUrl);
