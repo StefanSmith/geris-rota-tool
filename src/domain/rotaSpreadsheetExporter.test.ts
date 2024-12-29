@@ -16,10 +16,10 @@ test('creates spreadsheet from rota table', () => {
     const rotaSpreadsheetExporter = createRotaSpreadsheetExporter(spreadsheetAuthor, ANY_CLOCK);
 
     const rotaTable = aRotaTable()
-        .withWeekRows([
+        .withWeekRows(
             [new Date(2025, 3, 7), '', ''],
             [new Date(2025, 3, 14), '', ''],
-        ])
+        )
         .build();
 
     rotaSpreadsheetExporter.exportRota(rotaTable);

@@ -1,7 +1,9 @@
 import {Clock, DataTable, SpreadsheetAuthor} from "./ports.ts";
 
+export type ExportRotaResult = { spreadsheetUrl: string };
+
 export interface RotaSpreadsheetExporter {
-    exportRota: (rotaTable: DataTable) => Promise<{ spreadsheetUrl: string }>
+    exportRota: (rotaTable: DataTable) => Promise<ExportRotaResult>
 }
 
 export function createRotaSpreadsheetExporter(spreadsheetAuthor: SpreadsheetAuthor, clock: Clock): RotaSpreadsheetExporter {

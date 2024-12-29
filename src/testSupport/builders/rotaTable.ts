@@ -4,7 +4,7 @@ export function aRotaTable() {
     let weekRows: DataTableRow[] = [];
 
     const self = {
-        withWeekRows: (value: DataTableRow[]) => {
+        withWeekRows: (...value: DataTableRow[]) => {
             weekRows = value;
             return self;
         },
