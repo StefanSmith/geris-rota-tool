@@ -7,7 +7,7 @@ import {SpreadsheetExporter} from "../../domain/ports.ts";
 import {RotaTableRow} from "../../domain/rotaTableGenerator.ts";
 
 function toGoogleSheetsDate(date: Date): number {
-    return differenceInDays(date, new Date(1899, 12, 30));
+    return differenceInDays(date, new Date(1899, 11, 30));
 }
 
 function rowsToSheetsRowData(rows: RotaTableRow[]): gapi.client.sheets.RowData[] {
