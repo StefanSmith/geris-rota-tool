@@ -3,14 +3,13 @@ import createGoogleApiClient from "./googleApiClient.ts";
 import createSdkGoogleAccessTokenClient from "./authorization/sdkGoogleAccessTokenClient.ts";
 import createSessionStorageGoogleAccessTokenClient from "./authorization/sessionStorageGoogleAccessTokenClient.ts";
 import createApiClientAuthorizer, {ApiClientAuthorizer} from "./authorization/apiClientAuthorizer.ts";
-import {SpreadsheetExporter} from "../../domain/ports.ts";
-import {RotaTableRow} from "../../domain/rotaTableGenerator.ts";
+import {DataTableRow, SpreadsheetAuthor} from "../../domain/ports.ts";
 
 function toGoogleSheetsDate(date: Date): number {
     return differenceInDays(date, new Date(1899, 11, 30));
 }
 
-function rowsToSheetsRowData(rows: RotaTableRow[]): gapi.client.sheets.RowData[] {
+function rowsToSheetsRowData(rows: DataTableRow[]): gapi.client.sheets.RowData[] {
     return rows.map(row => ({
         values: row.map(cellValue => ({
             userEnteredValue: cellValue instanceof Date ?
@@ -20,11 +19,11 @@ function rowsToSheetsRowData(rows: RotaTableRow[]): gapi.client.sheets.RowData[]
     }));
 }
 
-function createSpreadsheetExporter({apiKey, authClientId}: { apiKey: string, authClientId: string }) {
+function createSpreadsheetAuthor({apiKey, authClientId}: { apiKey: string, authClientId: string }): SpreadsheetAuthor {
     let apiClientAuthorizer: ApiClientAuthorizer | undefined;
 
-    const spreadsheetExporter: SpreadsheetExporter = {
-        exportSpreadsheet: async (title, table) => {
+    return {
+        createSpreadsheet: async (title, table) => {
             if (!apiClientAuthorizer) {
                 apiClientAuthorizer = createApiClientAuthorizer(
                     {
@@ -73,8 +72,6 @@ function createSpreadsheetExporter({apiKey, authClientId}: { apiKey: string, aut
             return {spreadsheetUrl};
         }
     };
-
-    return spreadsheetExporter;
 }
 
-export default createSpreadsheetExporter;
+export default createSpreadsheetAuthor;
