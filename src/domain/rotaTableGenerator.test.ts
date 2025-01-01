@@ -1,11 +1,11 @@
 import {beforeEach, expect, test} from 'vitest';
 import createRotaTableGenerator, {RotaTableGenerator} from "./rotaTableGenerator.ts";
+import {clockFrozenAt, TestClock} from "../testSupport/dateUtils.ts";
 
-let rotaTableGenerator: RotaTableGenerator, currentTime: Date;
+let rotaTableGenerator: RotaTableGenerator, clock: TestClock;
 
 beforeEach(() => {
-    currentTime = new Date(Date.UTC(1970, 0, 1));
-    const clock = {getCurrentTime: () => currentTime};
+    clock = clockFrozenAt(1970, 1, 1);
     rotaTableGenerator = createRotaTableGenerator(clock);
 });
 
@@ -25,7 +25,7 @@ test('includes 2 columns for "CMU A" ward', () => {
 });
 
 test("includes row for every Monday in upcoming year's rota", () => {
-    currentTime = new Date(2024, 11, 27);
+    clock.setCurrentDate(2024, 12, 27);
 
     const rotaTable = rotaTableGenerator.generateRotaTable();
 

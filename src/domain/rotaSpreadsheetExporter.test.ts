@@ -2,10 +2,10 @@ import {expect, test, vi} from 'vitest';
 import {createRotaSpreadsheetExporter} from "./rotaSpreadsheetExporter.ts";
 import {Clock, SpreadsheetAuthor} from "./ports.ts";
 import {aRotaTable} from "../testSupport/builders/rotaTable.ts";
+import {clockFrozenAt} from "../testSupport/dateUtils.ts";
 
-const ANY_CLOCK = {
-    getCurrentTime: () => new Date(2024, 11, 29, 16, 47, 31)
-};
+const ANY_CLOCK = clockFrozenAt(2024, 12, 29, 16, 47, 31);
+
 const ANY_ROTA_TABLE = aRotaTable()
     .build();
 
@@ -31,9 +31,7 @@ test('titles spreadsheet based on current time', () => {
     const spreadsheetAuthor: SpreadsheetAuthor = {
         createSpreadsheet: vi.fn()
     };
-    const clock: Clock = {
-        getCurrentTime: () => new Date(2024, 6, 29, 16, 47, 31)
-    };
+    const clock: Clock = clockFrozenAt(2024, 7, 29, 16, 47, 31);
 
     const rotaSpreadsheetExporter = createRotaSpreadsheetExporter(spreadsheetAuthor, clock);
 
