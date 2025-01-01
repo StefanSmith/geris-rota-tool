@@ -1,59 +1,27 @@
-import {expect, test, vi} from 'vitest';
-import {render, screen} from "@testing-library/react";
-import App from "./App.tsx";
-import {RotaSpreadsheetExporter} from "./domain/rotaSpreadsheetExporter.ts";
-import {RotaTableGenerator} from "./domain/rotaTableGenerator.ts";
-import userEvent from "@testing-library/user-event";
-import {aRotaTable} from "./testSupport/builders/rotaTable.ts";
-import {DataTable} from "./domain/ports.ts";
+import {expect, test} from 'vitest';
+import {waitFor} from "@testing-library/react";
+import {localDate} from "./testSupport/dateUtils.ts";
+import {createApplication} from "./testSupport/openBoxTestApplication.tsx";
 
 /**
  * @vitest-environment jsdom
  */
 
-function mockRotaTableGenerator() {
-    return {
-        generateRotaTable: vi.fn<RotaTableGenerator['generateRotaTable']>()
-    };
-}
-
-function mockRotaSpreadsheetExporter() {
-    return {
-        exportRota: vi.fn<RotaSpreadsheetExporter['exportRota']>()
-    };
-}
-
-function rotaTableGeneratorThatGenerates(generatedRotaTable: DataTable) {
-    const rotaTableGenerator = mockRotaTableGenerator();
-    rotaTableGenerator.generateRotaTable.mockImplementation(() => generatedRotaTable);
-    return rotaTableGenerator;
-}
-
-function rotaSpreadsheetExporterThatExpects(generatedRotaTable: DataTable) {
-    const rotaSpreadsheetExporter = mockRotaSpreadsheetExporter();
-    rotaSpreadsheetExporter.exportRota.mockImplementation(rotaTable =>
-        rotaTable === generatedRotaTable ?
-            Promise.resolve({spreadsheetUrl: 'http://spreadsheet-url'}) :
-            Promise.reject('Unexpected rota table passed')
-    );
-    return rotaSpreadsheetExporter;
-}
-
 test('Generating a rota', async () => {
-    const generatedRotaTable = aRotaTable()
-        .withWeekRows([new Date(2025, 3, 7), '', ''])
-        .build();
+    const app = createApplication()
+        .runtimeEnvironment.hasCurrentDate(2025, 1, 15)
+        .rotaSpreadsheetExporting.exportsSpreadsheetsToUrl(() => "http://spreadsheet-url");
 
-    const rotaTableGenerator = rotaTableGeneratorThatGenerates(generatedRotaTable);
-    const rotaSpreadsheetExporter = rotaSpreadsheetExporterThatExpects(generatedRotaTable);
+    await app.ui.requestRotaExport();
 
-    render(<App
-        rotaTableGenerator={rotaTableGenerator}
-        rotaSpreadsheetExporter={rotaSpreadsheetExporter}
-    />);
+    await waitFor(() => expect(app.ui).toDisplayRotaSpreadsheetLinkWithUrl("http://spreadsheet-url"));
 
-    await userEvent.click(screen.getByText('Export Rota'));
+    const exportedRotaTables = app.rotaSpreadsheetExporting.exportedRotaTables();
+    expect(exportedRotaTables).toHaveLength(1);
 
-    const openRotaLink = await screen.findByRole("link", {name: "Open rota"});
-    expect(openRotaLink).toHaveAttribute("href", "http://spreadsheet-url");
+    const exportedRotaTable = exportedRotaTables[0];
+    expect(exportedRotaTable.rows[0]).toEqual(['Monday', 'CMU A', 'CMU A']);
+    expect(exportedRotaTable.rows[1]).toEqual([localDate(2025, 4, 7), '', '']);
+    expect(exportedRotaTable.rows[2]).toEqual([localDate(2025, 4, 14), '', '']);
+    expect(exportedRotaTable.rows[52]).toEqual([localDate(2026, 3, 30), '', '']);
 });

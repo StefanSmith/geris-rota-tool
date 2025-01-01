@@ -1,15 +1,16 @@
 import './App.css'
 import {useState} from "react";
 import spinner from './assets/spinner.gif'
-import {RotaTableGenerator} from "./domain/rotaTableGenerator.ts";
+import createRotaTableGenerator, {RotaTableGenerator} from "./domain/rotaTableGenerator.ts";
 import {RotaSpreadsheetExporter} from "./domain/rotaSpreadsheetExporter.ts";
+import {Clock} from "./domain/ports.ts";
 
 type AppProps = {
     rotaTableGenerator: RotaTableGenerator,
     rotaSpreadsheetExporter: RotaSpreadsheetExporter
 };
 
-function App({rotaTableGenerator, rotaSpreadsheetExporter}: AppProps) {
+export function App({rotaTableGenerator, rotaSpreadsheetExporter}: AppProps) {
     const [generatingSpreadsheet, setGeneratingSpreadsheet] = useState(false);
     const [spreadsheetUrl, setSpreadsheetUrl] = useState(undefined as string | undefined);
 
@@ -42,4 +43,15 @@ function App({rotaTableGenerator, rotaSpreadsheetExporter}: AppProps) {
     )
 }
 
-export default App
+type AppContainerProps = {
+    rotaSpreadsheetExporter: RotaSpreadsheetExporter,
+    clock: Clock
+};
+
+const AppContainer = ({rotaSpreadsheetExporter, clock}: AppContainerProps) =>
+    <App
+        rotaTableGenerator={createRotaTableGenerator(clock)}
+        rotaSpreadsheetExporter={rotaSpreadsheetExporter}
+    />;
+
+export default AppContainer;

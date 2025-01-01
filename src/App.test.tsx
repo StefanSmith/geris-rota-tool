@@ -1,6 +1,6 @@
 import {expect, test, vi} from 'vitest';
 import {render, screen, waitFor} from "@testing-library/react";
-import App from "./App.tsx";
+import {App} from "./App.tsx";
 import {ExportRotaResult, RotaSpreadsheetExporter} from "./domain/rotaSpreadsheetExporter.ts";
 import {RotaTableGenerator} from "./domain/rotaTableGenerator.ts";
 import userEvent from "@testing-library/user-event";

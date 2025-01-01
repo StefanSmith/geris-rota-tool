@@ -25,3 +25,7 @@ export function controllablePromise<T>(): ControllablePromise<T> {
 
     return promise as ControllablePromise<T>;
 }
+
+export function promiseThatResolvesAfterMillis<T>(delayMillis: number, resolvedValue: T) {
+    return new Promise<T>(resolve => setTimeout(() => resolve(resolvedValue), delayMillis));
+}

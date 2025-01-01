@@ -2,15 +2,11 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-
-import createRotaTableGenerator from "./domain/rotaTableGenerator.ts";
 import createSpreadsheetAuthor from "./adapters/google/googleSheetsSpreadsheetAuthor.ts";
 import createSystemClock from "./adapters/systemClock.ts";
 import {createRotaSpreadsheetExporter} from "./domain/rotaSpreadsheetExporter.ts";
 
 const systemClock = createSystemClock();
-
-const rotaTableGenerator = createRotaTableGenerator(systemClock);
 
 const rotaSpreadsheetExporter = createRotaSpreadsheetExporter(
     createSpreadsheetAuthor({
@@ -22,8 +18,6 @@ const rotaSpreadsheetExporter = createRotaSpreadsheetExporter(
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <App rotaTableGenerator={rotaTableGenerator}
-             rotaSpreadsheetExporter={rotaSpreadsheetExporter}
-        />
+        <App rotaSpreadsheetExporter={rotaSpreadsheetExporter} clock={systemClock}/>
     </StrictMode>,
 )
