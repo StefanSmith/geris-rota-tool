@@ -3,7 +3,8 @@ import createGoogleApiClient from "./googleApiClient.ts";
 import createSdkGoogleAccessTokenClient from "./authorization/sdkGoogleAccessTokenClient.ts";
 import createSessionStorageGoogleAccessTokenClient from "./authorization/sessionStorageGoogleAccessTokenClient.ts";
 import createApiClientAuthorizer, {ApiClientAuthorizer} from "./authorization/apiClientAuthorizer.ts";
-import {DataTableRow, SpreadsheetAuthor} from "../../domain/ports.ts";
+import {SpreadsheetAuthor} from "../../domain/ports.ts";
+import {DataTableRow} from "../../domain/types.ts";
 
 function toGoogleSheetsDate(date: Date): number {
     return differenceInDays(date, new Date(1899, 11, 30));

@@ -1,5 +1,5 @@
 import {expect, test, vi} from 'vitest';
-import {render, screen, waitFor} from "@testing-library/react";
+import {render, screen, waitFor, within} from "@testing-library/react";
 import {App} from "./App.tsx";
 import {ExportRotaResult, RotaSpreadsheetExporter} from "./domain/rotaSpreadsheetExporter.ts";
 import {RotaTableGenerator} from "./domain/rotaTableGenerator.ts";
@@ -43,6 +43,24 @@ test('initially hides rota link', async () => {
     expect(screen.queryByRole('link', {name: 'Open rota'})).not.toBeInTheDocument();
 });
 
+test('initially displays add doctor button', async () => {
+    render(<App
+        rotaTableGenerator={mockRotaTableGenerator()}
+        rotaSpreadsheetExporter={mockRotaSpreadsheetExporter()}
+    />);
+
+    expect(screen.queryByRole('button', {name: 'Add Doctor'})).toBeInTheDocument();
+});
+
+test('initially hides add doctor dialog', async () => {
+    render(<App
+        rotaTableGenerator={mockRotaTableGenerator()}
+        rotaSpreadsheetExporter={mockRotaSpreadsheetExporter()}
+    />);
+
+    expect(screen.queryByRole('dialog', {name: 'Add Doctor'})).not.toBeInTheDocument();
+});
+
 test('initially displays export rota button', async () => {
     render(<App
         rotaTableGenerator={mockRotaTableGenerator()}
@@ -50,6 +68,51 @@ test('initially displays export rota button', async () => {
     />);
 
     expect(screen.queryByRole('button', {name: 'Export Rota'})).toBeInTheDocument();
+});
+
+test('displays add doctor dialog when add doctor button clicked', async () => {
+    const rotaSpreadsheetExporter = mockRotaSpreadsheetExporter();
+    rotaSpreadsheetExporter.exportRota.mockImplementation(() => hangingPromise());
+
+    render(<App
+        rotaTableGenerator={mockRotaTableGenerator()}
+        rotaSpreadsheetExporter={rotaSpreadsheetExporter}
+    />);
+
+    await userEvent.click(screen.getByRole('button', {name: 'Add Doctor'}));
+
+    expect(screen.queryByRole('dialog', {name: 'Add Doctor'})).toBeInTheDocument();
+});
+
+test('hides add doctor dialog when add doctor button clicked on dialog', async () => {
+    const rotaSpreadsheetExporter = mockRotaSpreadsheetExporter();
+    rotaSpreadsheetExporter.exportRota.mockImplementation(() => hangingPromise());
+
+    render(<App
+        rotaTableGenerator={mockRotaTableGenerator()}
+        rotaSpreadsheetExporter={rotaSpreadsheetExporter}
+    />);
+
+    await userEvent.click(screen.getByRole('button', {name: 'Add Doctor'}));
+    const addDoctorDialog = screen.getByRole('dialog', {name: 'Add Doctor'});
+
+    await userEvent.click(within(addDoctorDialog).getByRole('button', {name: 'Add Doctor'}));
+
+    expect(screen.queryByRole('dialog', {name: 'Add Doctor'})).not.toBeInTheDocument();
+});
+
+test('hides add doctor button when export rota button clicked', async () => {
+    const rotaSpreadsheetExporter = mockRotaSpreadsheetExporter();
+    rotaSpreadsheetExporter.exportRota.mockImplementation(() => hangingPromise());
+
+    render(<App
+        rotaTableGenerator={mockRotaTableGenerator()}
+        rotaSpreadsheetExporter={rotaSpreadsheetExporter}
+    />);
+
+    await userEvent.click(screen.getByRole('button', {name: 'Export Rota'}));
+
+    expect(screen.queryByRole('button', {name: 'Add Doctor'})).not.toBeInTheDocument();
 });
 
 test('hides export rota button when clicked', async () => {
@@ -94,7 +157,12 @@ test('generates and exports rota when rota button clicked', async () => {
         rotaSpreadsheetExporter={rotaSpreadsheetExporter}
     />);
 
+    await userEvent.click(screen.getByRole('button', {name: 'Add Doctor'}));
+    await userEvent.type(within(screen.getByRole('dialog', {name: 'Add Doctor'})).getByRole('textbox', {name: 'Initials'}), 'DL');
+    await userEvent.click(within(screen.getByRole('dialog', {name: 'Add Doctor'})).getByRole('button', {name: 'Add Doctor'}));
     await userEvent.click(screen.getByRole('button', {name: 'Export Rota'}));
+
+    expect(rotaTableGenerator.generateRotaTable).toHaveBeenCalledWith({doctors: [{initials: 'DL'}]});
     expect(rotaSpreadsheetExporter.exportRota).toHaveBeenCalledWith(generatedRotaTable);
 });
 

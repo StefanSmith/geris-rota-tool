@@ -1,18 +1,20 @@
 import createRotaCalendar from "./rotaCalendar.ts";
-import {Clock, DataTable, DataTableRow} from "./ports.ts";
+import {Clock} from "./ports.ts";
+import {DataTable, DataTableRow, Doctor} from "./types.ts";
 
 export interface RotaTableGenerator {
-    generateRotaTable(): DataTable
+    generateRotaTable({doctors}: { doctors: Doctor[] }): DataTable
 }
 
 function createRotaTableGenerator(clock: Clock): RotaTableGenerator {
     const rotaCalendar = createRotaCalendar(clock);
 
     return {
-        generateRotaTable(): DataTable {
+        generateRotaTable({doctors}): DataTable {
             const headerRow: DataTableRow = ['Monday', 'CMU A', 'CMU A'];
             const mondays = rotaCalendar.getRotaMondays();
-            const weekRows: DataTableRow[] = mondays.map(monday => [monday, '', '']);
+            const firstDoctorInitials = doctors[0].initials;
+            const weekRows: DataTableRow[] = mondays.map(monday => [monday, firstDoctorInitials, firstDoctorInitials]);
 
             return {
                 rows: [headerRow, ...weekRows],

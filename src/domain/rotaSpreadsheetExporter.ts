@@ -1,4 +1,5 @@
-import {Clock, DataTable, SpreadsheetAuthor} from "./ports.ts";
+import {Clock, SpreadsheetAuthor} from "./ports.ts";
+import {DataTable} from "./types.ts";
 
 export type ExportRotaResult = { spreadsheetUrl: string };
 

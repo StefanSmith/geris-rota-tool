@@ -1,4 +1,4 @@
-import {DataTable, DataTableRow} from "../../domain/ports.ts";
+import {DataTable, DataTableRow} from "../../domain/types.ts";
 
 export function aRotaTable() {
     let weekRows: DataTableRow[] = [];

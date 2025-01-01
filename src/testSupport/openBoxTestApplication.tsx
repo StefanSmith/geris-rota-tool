@@ -1,14 +1,14 @@
 /**
  * @vitest-environment jsdom
  */
-import {DataTable} from "../domain/ports.ts";
 import {ExportRotaResult, RotaSpreadsheetExporter} from "../domain/rotaSpreadsheetExporter.ts";
 import {promiseThatResolvesAfterMillis} from "./promiseUtils.ts";
 import {clockFrozenAt} from "./dateUtils.ts";
-import {render, screen} from "@testing-library/react";
+import {render, screen, within} from "@testing-library/react";
 import App from "../App.tsx";
 import {vi} from "vitest";
 import userEvent from "@testing-library/user-event";
+import {DataTable} from "../domain/types.ts";
 
 function mockRotaSpreadsheetExporter() {
     return {
@@ -20,6 +20,8 @@ export interface TestApplicationUI {
     getRotaSpreadsheetLinkUrl(): string | null;
 
     requestRotaExport: () => Promise<void>;
+
+    addDoctor(initials: string): Promise<void>;
 }
 
 interface RotaSpreadsheetExporting {
@@ -80,6 +82,13 @@ export function createApplication(): TestApplication {
             }
         },
         ui: {
+            async addDoctor(initials: string): Promise<void> {
+                await userEvent.click(screen.getByRole('button', {name: 'Add Doctor'}));
+
+                const addDoctorDialog = await screen.findByRole('dialog', {name: 'Add Doctor'});
+                await userEvent.type(within(addDoctorDialog).getByRole('textbox', {name: 'Initials'}), initials);
+                await userEvent.click(within(addDoctorDialog).getByRole('button', {name: 'Add Doctor'}));
+            },
             getRotaSpreadsheetLinkUrl(): string | null {
                 const openRotaLink = screen.queryByRole("link", {name: "Open rota"});
                 return openRotaLink && openRotaLink.getAttribute("href");

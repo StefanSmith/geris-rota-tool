@@ -1,10 +1,8 @@
+import {DataTable} from "./types.ts";
+
 export interface Clock {
     getCurrentTime: () => Date
 }
-
-export type DataTableCell = string | Date;
-export type DataTableRow = DataTableCell[];
-export type DataTable = { rows: DataTableRow[], dateColumns: number[] };
 
 type CreateSpreadsheetResult = {
     spreadsheetUrl: string
